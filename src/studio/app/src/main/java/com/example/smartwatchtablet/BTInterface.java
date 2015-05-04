@@ -70,15 +70,12 @@ public class BTInterface
 		if(pairedDevices.size() > 0)
 		{
 			for(BluetoothDevice device : pairedDevices)
-			{
-				if(device.getName().equals("HC-06")) 
-				{
-					mmDevice = device;
+                if (device.getName().equals("HC-05")) {
+                    mmDevice = device;
 
-					//Toast.makeText(this, "Found", Toast.LENGTH_SHORT).show();
-					break;
-				}
-			}
+                    //Toast.makeText(this, "Found", Toast.LENGTH_SHORT).show();
+                    break;
+                }
 		}
 		if(mmDevice == null)
 		{

@@ -145,7 +145,7 @@ void timeupdate(){
 						{
 							try
 							{
-								tvTemp.setText(str.toString()+"°");
+								tvTemp.setText(str.toString()+"ï¿½");
 							}
 							catch(NumberFormatException NFE)
 							{
@@ -263,6 +263,10 @@ void timeupdate(){
 			toSend += "#";
 			toSend += ""+packagesInfo.gmailCount;
 			toSend += "#";
+            toSend += ""+packagesInfo.missedCallCount;
+            toSend += "#";
+            toSend += ""+packagesInfo.messageCount;
+            toSend += "#";
 			toSend+=""+hours+"#";
 			toSend+=""+minutes+"#";
 			if(tickerText==null)
@@ -281,7 +285,7 @@ void timeupdate(){
 			System.out.println("hello world : "+seconds);
 			String line1 = "1";
 			line1 += dc.getText()+ " W"+Integer.toString(packagesInfo.whatsappCount) + " C" +
-					Integer.toString(packagesInfo.missedCallCount) + " T"+str.toString()+"°C";
+					Integer.toString(packagesInfo.missedCallCount) + " T"+str.toString()+"ï¿½C";
 			bt.sendData(line1);
 			if(tickerText == null || tickerText.equals("null"))
 			{
