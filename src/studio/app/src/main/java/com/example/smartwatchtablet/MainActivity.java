@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
@@ -259,18 +260,17 @@ void timeupdate(){
 			int minutes = c.get(Calendar.MINUTE);
 			int hours = c.get(Calendar.HOUR_OF_DAY);
 			String toSend = "";
-			toSend += "#"+packagesInfo.whatsappCount;
+            toSend += "#"+packagesInfo.whatsappCount;
+            toSend += "#"+packagesInfo.gmailCount;
 			toSend += "#";
-			toSend += ""+packagesInfo.gmailCount;
-			toSend += "#";
-            toSend += ""+packagesInfo.missedCallCount;
+            toSend += packagesInfo.missedCallCount;
             toSend += "#";
-            toSend += ""+packagesInfo.messageCount;
+            toSend += packagesInfo.messageCount;
             toSend += "#";
-			toSend+=""+hours+"#";
-			toSend+=""+minutes+"#";
+			toSend += hours+"#";
+			toSend += minutes+"#";
 			if(tickerText==null)
-					tickerText="asfdsaf";
+					tickerText="Smartphone detected.";
 			toSend += tickerText+"#)";
 			bt.sendData(toSend);
 		} 
