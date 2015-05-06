@@ -18,10 +18,13 @@ boolean connection = false;
 boolean changing = true;
 
 int count = 0;
+int cv = 0;
 
 String data, time; //#wa#gm#mc#me#hr#mi#tickr#)
 int wa, ho, gm, mc, hr, mi;
 String tickr;
+
+
 
 static unsigned char const PROGMEM phon[] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -112,22 +115,22 @@ static const unsigned char PROGMEM bl[] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-static const unsigned char PROGMEM wai[]{
+static const unsigned char PROGMEM wai[] = {
 0x07, 0xE0, 0x1E, 0x38, 0x30, 0x0C, 0x20, 0x06, 0x64, 0x02, 0x4E, 0x03, 0xCE, 0x03, 0xC4, 0x01,
 0xC6, 0x01, 0xC3, 0xF3, 0x41, 0xF2, 0x60, 0x66, 0x60, 0x0C, 0x58, 0x18, 0xFF, 0xF0, 0xC1, 0x80
 };
 
-static const unsigned char PROGMEM mci[]{
+static const unsigned char PROGMEM mci[] = {
 0x00, 0x00, 0x78, 0x00, 0x30, 0x0C, 0x38, 0x18, 0x2C, 0x30, 0x06, 0x60, 0x03, 0xC0, 0x01, 0x80,
 0x00, 0x00, 0x0F, 0xF8, 0x3F, 0xFC, 0x78, 0x1F, 0xF8, 0x1F, 0x70, 0x0E, 0x20, 0x04, 0x00, 0x00
 };
 
-static const unsigned char PROGMEM gmi[]{
+static const unsigned char PROGMEM gmi[] = {
 0x00, 0x00, 0x31, 0x9C, 0x4F, 0xE2, 0x47, 0xC2, 0x43, 0x82, 0x49, 0x12, 0xCC, 0x33, 0xCE, 0x73,
 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFB, 0xDF, 0xF7, 0xEF, 0xFF, 0xFF, 0xBF, 0xFD, 0x00, 0x00
 };
 
-static const unsigned char PROGMEM adva[]{
+static const unsigned char PROGMEM adva[] = {
 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -189,10 +192,16 @@ void displayNoConnection();
 
 void setup()   {                
   Serial.begin(9600);
+  pinMode(2,INPUT);
+  pinMode(3,INPUT);
+  pinMode(4,INPUT);
   blue.begin(9600);
   display.begin(SSD1306_SWITCHCAPVCC);
   display.clearDisplay();
 }
+
+int screen = 0;
+int maxScreen = 1;
 
 void input(){
   char ch;
@@ -200,7 +209,40 @@ void input(){
     ch = blue.read();
      Serial.print(ch);
    
+       if(ch == '>')
+    {
+      screen++;
+      changing = true;
+      Serial.println(screen);
+      data = "";
+    }
     
+    if(ch == '<')
+    {
+      screen--;
+      changing = true;
+      Serial.println(screen);
+      data = "";
+    }
+    
+    if(ch == '^')
+    {
+      Serial.println(screen);
+      data = "";
+      
+      if(screen == 1)
+       cv++;
+       
+       changing = 1;
+    }
+    
+    if(screen<0)
+     screen = maxScreen;
+    
+    if(screen>maxScreen)
+     screen = 0;
+
+
     
     if(ch==')')
      {
@@ -350,7 +392,10 @@ void loop() {
   {
     if(changing)
      {
-       displayConnection();
+       if(screen == 0)
+        displayConnection();
+       if(screen==1)
+        displayCounter();
        changing = false;
      }
      input();
@@ -463,6 +508,115 @@ void displayConnection()
  putText(tick,1,0,57,WHITE);
  
   display.startscrollleft(0xFF, 0xFF);
-  
-  
 }
+
+
+void displayCounter()
+{ 
+  display.clearDisplay();
+  delay(10);
+
+  int i= cv;
+
+   char cou[3];
+   if (i<10)
+   {
+     cou[0]='0';
+     cou[1]=i+48;
+   }
+   else
+   {
+     cou[0]=(i/10)+48;
+     cou[1]=(i%10)+48;
+   }
+  cou[2]='\0';
+  putText(cou,3,30,20,WHITE);
+  
+ display.display(); 
+ 
+ //time = char(hr) + ':' + char(mi);
+ time = "";
+ if(hr<10)
+  time += '0';
+ time += hr;
+ time += ':';
+ if(mi<10)
+  time += '0';
+ time += mi;
+ 
+ int counter=0;
+ char tim[8];
+ while(time.charAt(counter)!='\0')
+{ 
+  tim[counter] = time.charAt(counter);
+  counter++;
+ }
+ tim[counter]='\0';
+ putText(tim,1,98,0,WHITE);
+ Serial.println(time);
+ 
+ display.drawBitmap(32, 0,  mci, 16,16, 1);
+ char mct[3];
+ if (mc<10)
+ {
+   mct[0]='0';
+   mct[1]=mc+48;
+ }
+ else
+ {
+   mct[0]=(mc/10)+48;
+   mct[1]=(mc%10)+48;
+ }
+ mct[2]='\0';
+ putText(mct,1,50,4,WHITE);
+ 
+ display.drawBitmap(0, 0,  wai, 16,16, 1);
+ char wat[3];
+ if (wa<10)
+ {
+   wat[0]='0';
+   wat[1]=wa+48;
+ }
+ else
+ {
+   wat[0]=(wa/10)+48;
+   wat[1]=(wa%10)+48;
+ }
+ wat[2]='\0';
+ putText(wat,1,18,4,WHITE);
+ 
+ display.drawBitmap(64, 0,  gmi, 16,16, 1);
+ char gmt[3];
+ if (gm<10)
+ {
+   gmt[0]='0';
+   gmt[1]=ho+48;
+ }
+ else
+ {
+   gmt[0]=(gm/10)+48;
+   gmt[1]=(gm%10)+48;
+ }
+ gmt[2]='\0';
+ putText(gmt,1,82,4,WHITE);
+ 
+ counter = 0;
+ char tick[25];
+ while(tickr.charAt(counter)!='\0')
+ {
+  tick[counter] = tickr.charAt(counter);
+  counter++;
+ }
+ if (counter>20)
+ {
+ tick[21]=' ';
+  tick[20]='.';
+ tick[22]='\0';
+ }
+ else
+   tick[counter]='\0';
+ putText(tick,1,0,57,WHITE);
+ 
+  display.startscrollleft(0xFF, 0xFF);
+}
+

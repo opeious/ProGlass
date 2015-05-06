@@ -4,9 +4,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-/**
- * Created by Ishan Kothari on 13/12/13.
- */
+
 public class HandlingXMLStuff extends DefaultHandler
 {
     XMLDataCollected info = new XMLDataCollected();

@@ -36,7 +36,9 @@ public class NLService extends NotificationListenerService
 		i.putExtra("type", "posted");
         i.putExtra("package_name",sbn.getPackageName());
         i.putExtra("ticker_text",sbn.getNotification().tickerText);
-        sendBroadcast(i);
+        i.putExtra("title",extras.getString("android.title"));
+        i.putExtra("text",extras.getCharSequence("android.text").toString());
+                sendBroadcast(i);
     }
 
     
